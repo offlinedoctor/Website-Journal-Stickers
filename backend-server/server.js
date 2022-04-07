@@ -3,6 +3,7 @@ const path = require('path');
 var bodyParser = require('body-parser')
 var app = express();
 const cors = require('cors');
+const bcrypt = require('bcrypt');
 app.use(express.static("public"));
 app.use(bodyParser.json());
 app.use(cors());
@@ -17,6 +18,16 @@ const LoginDetailsSchema = new Schema({
             Password: String
 });
 
+LoginDetailsSchema.pre('save', function(next)
+{                                              
+	const user = this;	
+	bcrypt.hash(user.Password, 10, (error, hash_output) =>  
+	{                                                    
+		user.Password = hash_output;                   
+		next()                      
+	})
+})
+
 const LoginDetails = mongoose.model('LoginDetails', LoginDetailsSchema);
 
 var server = app.listen(4000, onServerStart);
@@ -28,20 +39,29 @@ function onServerStart()
 
 app.post("/ConfirmLoginDetails", CheckLoginDetails);
 
-function CheckLoginDetails(req, res)
+async function CheckLoginDetails(req, res)
 {
-	LoginDetails.find({Username: req.body.username}, function (err, result)
+	let result = await LoginDetails.findOne({Username: req.body.username});
+	if (result)
 	{
-		if (!result.length)
+		console.log("Username was found.");
+		bcrypt.compare(req.body.password, result.Password, (error, same) =>
 		{
-			console.log("Username does not exist.");
-		}
-		else
-		{
-			//Use if Username did exist
-			console.log("Username does exist.");
-		}
-	})
+			if (same)
+			{
+				console.log('correct password');
+			}
+			else
+			{
+				console.log('incorrect password');
+			}
+		})
+	}
+	else
+	{
+		//Use if Username did exist
+		console.log("Username does not exist.");
+	}
 	
 	res.sendStatus(200);
 };
