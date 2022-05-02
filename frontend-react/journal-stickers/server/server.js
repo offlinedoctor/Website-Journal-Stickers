@@ -120,7 +120,7 @@ async function CheckLoginDetails(req, res)
 	{
 		//Use if Username did exist
 		console.log("Username does not exist.");
-		res.send({Status: "Success"});
+		res.send({Status: "Not Success"});
 	}
 };
 

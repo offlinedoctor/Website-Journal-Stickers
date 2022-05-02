@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Navigate } from "react-router-dom";
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+
 
 function ConditionalRender(props)
 {
@@ -10,7 +13,7 @@ function ConditionalRender(props)
 	else if (props.loginSuccess == "false")
 	{
 		console.log("hello");
-		return <h1>Incorrect login details.</h1>;
+		return <h1> Incorrect Details </h1>;
 	}
 	else
 	{
@@ -39,13 +42,14 @@ class LoginScreen extends React.Component
 		{
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({username: document.getElementById('user').value, password: document.getElementById('pass').value})
+			body: JSON.stringify({username: document.getElementById('usernameID').value, password: document.getElementById('passwordID').value})
 		}	
 
 		fetch('http://localhost:3001/ConfirmLoginDetails', LoginDetailsJSON)
         .then(response => response.json())
 		.then(data => 
 		{
+			console.log(data);
 			if (data.Status == "Success")
 			{
 				this.setState({loginStatus: "true"});
@@ -63,7 +67,7 @@ class LoginScreen extends React.Component
 		{
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({username: document.getElementById('user').value, password: document.getElementById('pass').value})	
+			body: JSON.stringify({username: document.getElementById('usernameID').value, password: document.getElementById('passwordID').value})	
 		}
 
 		fetch('http://localhost:3001/CreateLoginDetails', LoginDetailsJSON)
@@ -75,14 +79,14 @@ class LoginScreen extends React.Component
 	{
 		return(
 			<div>
-				<form>
-				  <label for="username">Username:</label>
-				  <input type="text" id="user" name="fname" />
-				  <label for="password">Password:</label>
-				  <input type="text" id="pass" name="lname"/>
-				</form>
-				<button onClick={this.loginAccount}>Login</button>
-				<button onClick={this.registerAccount}>Register Account</button>
+				<div style={{display:"flex", flexDirection: "column", width: "50%"}}>
+					<TextField id="usernameID" label="Username" variant="outlined" />
+					<TextField id="passwordID" label="Password" variant="outlined" />
+					<div style={{display: "flex", justifyContent: "center"}}>
+						<Button variant="contained" onClick={this.loginAccount}>Login</Button>
+						<Button variant="contained" onClick={this.registerAccount}>Register Account</Button>
+					</div>
+				</div>
 				<ConditionalRender loginSuccess={this.state.loginStatus} />
 			</div>
 		);	  
