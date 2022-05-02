@@ -3,6 +3,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import ForwardIcon from '@mui/icons-material/Forward';
 import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
 
 class Dashboard extends React.Component
 {	
@@ -45,18 +46,22 @@ class Dashboard extends React.Component
 	
 
 		return(
-			<div>
-				<div style={{display: "flex", flexDirection: "column", width: "25%"}}>
-					<TextField id="BlogPost" label="Blog Idea" variant="outlined" />
-					<Button variant="contained" onClick={this.SubmitBlogPost} endIcon={<ForwardIcon />}> Submit </Button>
-				</div>
+			<div style={{display: "flex", flexDirection: "column", alignItems: "center" }}>
+				<Grid container spacing={2} style={{height: "500px", overflowY: "auto", width: "500px", overflowX: "auto"}}>
 				{
 					this.state.BlogPostList.map(eachIteration => 
-						<Paper elevation={3}>
-							<h1> {eachIteration.blogpost} </h1>
-						</Paper>
+						<Grid item>
+							<Paper style={{display: "inline-block"}} elevation={3}>
+								<h1> {eachIteration.blogpost} </h1>
+							</Paper>
+						</Grid>
 					)
 				}
+				</Grid>
+				<div style={{display: "flex", flexDirection: "column", width: "25%"}}>
+					<TextField id="BlogPost" label="Blog Idea" variant="outlined" inputProps={{ maxLength: 12 }}/>
+					<Button variant="contained" onClick={this.SubmitBlogPost} endIcon={<ForwardIcon />}> Submit </Button>
+				</div>
 			</div>
 		);	  
 	}
