@@ -26,14 +26,21 @@ class Dashboard extends React.Component
 		
 		console.log(BlogPostDetailsJSON);
 		
-		fetch('/SubmitBlogPost', BlogPostDetailsJSON)
+		fetch('http://localhost:3001/SubmitBlogPost', BlogPostDetailsJSON)
         .then(response => response.json())
 		.then(data => this.setState({BlogPostList: data}));
 		
 	}
+
+	componentDidMount() 
+	{
+		this.SubmitBlogPost();
+	}
 	
 	render()
 	{	
+	
+
 		return(
 			<div>
 				<textarea name="Text1" id="BlogPost" cols="40" rows="5"></textarea>
@@ -43,9 +50,6 @@ class Dashboard extends React.Component
 						<h1> {eachIteration.blogpost} </h1>
 					)
 				}
-				<h1>
-					Pcgaming
-				</h1>
 			</div>
 		);	  
 	}

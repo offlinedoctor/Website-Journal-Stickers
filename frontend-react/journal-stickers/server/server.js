@@ -17,8 +17,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "..", "build")));
-app.use(express.static("public"));
+//app.use(express.static(path.join(__dirname, "..", "public")));
+//app.use(express.static("public"));
 
 app.use(sessions({
     secret: "thisismysecrctekeyfhrgfgrfrty84fwir767",
@@ -58,13 +58,13 @@ const BlogPostDetails = mongoose.model('BlogPostDetails', BlogPostSchema);
 
 
 
-//Start server on LocalHost 3000
+//Start server on LocalHost 3001
 
-var server = app.listen(3000, onServerStart);
+var server = app.listen(3001, onServerStart);
 
 function onServerStart()
 {
-    console.log("Server Started at LocalHost 3000");
+    console.log("Server Started at LocalHost 3001");
 }
 
 //Make Login Details

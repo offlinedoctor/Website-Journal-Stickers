@@ -1,6 +1,23 @@
 import React from 'react';
 import { Navigate } from "react-router-dom";
 
+function ConditionalRender(props)
+{
+	if (props.loginSuccess == "true")
+	{
+		return <Navigate replace to="/Dashboard" />;
+	}
+	else if (props.loginSuccess == "false")
+	{
+		console.log("hello");
+		return <h1>Incorrect login details.</h1>;
+	}
+	else
+	{
+		return <h1> is this working  </h1>;
+	}
+}
+
 class LoginScreen extends React.Component
 {
 	constructor()
@@ -9,7 +26,7 @@ class LoginScreen extends React.Component
 		
 		this.state=
 		{
-			webNavigation: "/"
+			loginStatus: "",
 		}
 		
 		this.loginAccount = this.loginAccount.bind(this);		
@@ -25,21 +42,21 @@ class LoginScreen extends React.Component
 			body: JSON.stringify({username: document.getElementById('user').value, password: document.getElementById('pass').value})
 		}	
 
-		fetch('/ConfirmLoginDetails', LoginDetailsJSON)
+		fetch('http://localhost:3001/ConfirmLoginDetails', LoginDetailsJSON)
         .then(response => response.json())
 		.then(data => 
 		{
 			if (data.Status == "Success")
 			{
-				this.setState({webNavigation: "/Dashboard"});
+				this.setState({loginStatus: "true"});
 			}
 			else
 			{
-				console.log("Failure");
+				this.setState({loginStatus: "false"});
 			}
 		});
 	}
-	
+		
 	registerAccount()
 	{
 		const LoginDetailsJSON=
@@ -49,7 +66,7 @@ class LoginScreen extends React.Component
 			body: JSON.stringify({username: document.getElementById('user').value, password: document.getElementById('pass').value})	
 		}
 
-		fetch('/CreateLoginDetails', LoginDetailsJSON)
+		fetch('http://localhost:3001/CreateLoginDetails', LoginDetailsJSON)
         .then(response => response.json())
 		.then(data => console.log(data));
 	}
@@ -66,7 +83,7 @@ class LoginScreen extends React.Component
 				</form>
 				<button onClick={this.loginAccount}>Login</button>
 				<button onClick={this.registerAccount}>Register Account</button>
-				<Navigate to={this.state.webNavigation}/>
+				<ConditionalRender loginSuccess={this.state.loginStatus} />
 			</div>
 		);	  
 	}
