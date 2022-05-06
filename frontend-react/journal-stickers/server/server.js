@@ -54,7 +54,8 @@ mongoose.connect("mongodb://localhost/my_database");
 
 const BlogPostSchema = new Schema({
     blogpost: String,
-    userid: String
+    userid: String,
+	date: String
 });
 
 const BlogPostDetails = mongoose.model('BlogPostDetails', BlogPostSchema);
@@ -167,7 +168,7 @@ async function functionSubmitBlogPost(req, res)
 	
 	if (req.body.blogpost)
 	{
-		BlogPostDetails.create({blogpost: req.body.blogpost, userid: req.session.userId});
+		BlogPostDetails.create({blogpost: req.body.blogpost, userid: req.session.userId, date: req.body.date});
 	}
 	
 	var BlogPostList = await BlogPostDetails.find({userid: req.session.userId});

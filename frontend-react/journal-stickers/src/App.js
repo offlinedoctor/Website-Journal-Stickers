@@ -12,7 +12,7 @@ class App extends React.Component
 		return(
 			<div>
 				<Routes>
-					<Route path="/" element={<LoginScreen/>} />
+					<Route path="/" element={<LoginScreen />} />
 					<Route path="/Dashboard" element={<Dashboard/>} />
 				</Routes>
 			</div>

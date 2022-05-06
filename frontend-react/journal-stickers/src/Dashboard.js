@@ -6,6 +6,7 @@ import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import Cookies from 'js-cookie';
 import { Navigate } from "react-router-dom";
+import Typography from '@mui/material/Typography';
 
 function ConditionalRender(props)
 {
@@ -41,7 +42,7 @@ class Dashboard extends React.Component
 			{
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({blogpost: document.getElementById('BlogPost').value})
+				body: JSON.stringify({blogpost: document.getElementById('BlogPost').value, date: new Date().toLocaleString()})
 			}	
 			
 			console.log(BlogPostDetailsJSON);
@@ -49,8 +50,8 @@ class Dashboard extends React.Component
 			fetch('/SubmitBlogPost', BlogPostDetailsJSON)
 			.then(response => response.json())
 			.then(data => this.setState({BlogPostList: data}));
-			
-			console.log(Cookies.get("userId"));
+									
+			document.getElementById('BlogPost').value = "";
 			
 	}
 
@@ -70,24 +71,30 @@ class Dashboard extends React.Component
 	render()
 	{	
 		return(
-			<div style={{display: "flex", flexDirection: "column", alignItems: "center" }}>
-				<Grid container spacing={2} style={{height: "500px", overflowY: "auto", width: "500px", overflowX: "hidden"}}>
-				{
-					this.state.BlogPostList.map(eachIteration => 
-						<Grid item>
-							<Paper style={{display: "inline-block"}} elevation={3}>
-								<h1> {eachIteration.blogpost} </h1>
-							</Paper>
-						</Grid>
-					)
-				}
-				</Grid>
-				<div style={{display: "flex", flexDirection: "column", width: "25%"}}>
+			<>
+				<div style={{display: "flex", flexDirection: "column", width: "25%", position: "fixed", backgroundColor: "white", borderRadius: "5px"}}>
 					<TextField id="BlogPost" label="Blog Idea" variant="outlined" inputProps={{ maxLength: 12 }}/>
 					<Button variant="contained" onClick={this.SubmitBlogPost} endIcon={<ForwardIcon />}> Submit </Button>
 				</div>
-				<ConditionalRender loginSuccess={this.state.loginStatus} />
-			</div>
+				<div style={{display: "flex", flexDirection: "row", alignItems: "center", paddingLeft: "250px"}}>
+					<Grid container spacing={2} style={{overflowY: "auto", overflowX: "hidden"}}>
+					{
+						this.state.BlogPostList.map(eachIteration => 
+							<Grid item>
+								<Paper style={{display: "inline-block"}} elevation={3}>
+									<div style={{padding: "10px"}}>
+										<Typography sx={{fontSize: 12}} style={{color: "#757575"}}> Date: {eachIteration.date} </Typography>
+										<div style={{borderBottom: "1px solid black"}}/>
+										<Typography variant="h4"> {eachIteration.blogpost} </Typography>
+									</div>
+								</Paper>
+							</Grid>	
+						)
+					}
+					</Grid>
+					<ConditionalRender loginSuccess={this.state.loginStatus} />
+				</div>
+			</>
 		);	  
 	}
 }

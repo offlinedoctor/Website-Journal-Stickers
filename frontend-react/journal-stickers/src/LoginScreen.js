@@ -3,22 +3,25 @@ import { Navigate } from "react-router-dom";
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Cookies from 'js-cookie';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import Typography from '@mui/material/Typography';
 
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 function ConditionalRender(props)
 {
 	if (props.loginSuccess == "true")
 	{
-		return <Navigate replace to="/Dashboard" />;
+		return (<Alert severity="success">Login Successful
+					<Navigate replace to="/Dashboard" />
+				</Alert>);
 	}
 	else if (props.loginSuccess == "false")
 	{
 		console.log("hello");
-		return <h1> Incorrect Details </h1>;
-	}
-	else
-	{
-		return <h1> is this working  </h1>;
+		return <Alert severity="error"> Incorrect Login Details!</Alert>;
 	}
 }
 
@@ -38,7 +41,7 @@ class LoginScreen extends React.Component
 	}
 		
 	loginAccount()
-	{
+	{		
 		const LoginDetailsJSON =
 		{
 			method: 'POST',
@@ -89,15 +92,18 @@ class LoginScreen extends React.Component
 	{
 		return(
 			<div>
-				<div style={{display:"flex", flexDirection: "column", width: "50%"}}>
-					<TextField id="usernameID" label="Username" variant="outlined" />
-					<TextField id="passwordID" label="Password" variant="outlined" />
-					<div style={{display: "flex", justifyContent: "center"}}>
-						<Button variant="contained" onClick={this.loginAccount}>Login</Button>
-						<Button variant="contained" onClick={this.registerAccount}>Register Account</Button>
+				<div style={{display: "flex", flexDirection: "column", justifyContent: "center", height: "75vh", alignItems: "center"}}>
+					<Typography sx={{fontSize: 36}}> Journal Stickers </Typography>
+					<div style={{display:"flex", flexDirection: "column", width: "50%", backgroundColor: "rgba(255,255,255,0.8)", padding: "35px", borderRadius: "15px"}}>
+						<TextField id="usernameID" label="Username" variant="outlined" style={{backgroundColor: "white", borderRadius: "5px"}}/>
+						<TextField id="passwordID" label="Password" variant="outlined" style={{backgroundColor: "white", borderRadius: "5px"}}/>
+						<div style={{display: "flex", justifyContent: "center"}}>
+							<Button variant="contained" onClick={this.loginAccount}>Login</Button>
+							<Button variant="contained" onClick={this.registerAccount}>Register Account</Button>
+						</div>
 					</div>
+					<ConditionalRender loginSuccess={this.state.loginStatus} />
 				</div>
-				<ConditionalRender loginSuccess={this.state.loginStatus} />
 			</div>
 		);	  
 	}
