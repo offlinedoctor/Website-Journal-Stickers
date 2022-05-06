@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Navigate } from "react-router-dom";
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import Cookies from 'js-cookie';
 
 
 function ConditionalRender(props)
@@ -45,7 +46,7 @@ class LoginScreen extends React.Component
 			body: JSON.stringify({username: document.getElementById('usernameID').value, password: document.getElementById('passwordID').value})
 		}	
 
-		fetch('http://localhost:3001/ConfirmLoginDetails', LoginDetailsJSON)
+		fetch('/ConfirmLoginDetails', LoginDetailsJSON)
         .then(response => response.json())
 		.then(data => 
 		{
@@ -70,11 +71,20 @@ class LoginScreen extends React.Component
 			body: JSON.stringify({username: document.getElementById('usernameID').value, password: document.getElementById('passwordID').value})	
 		}
 
-		fetch('http://localhost:3001/CreateLoginDetails', LoginDetailsJSON)
+		fetch('/CreateLoginDetails', LoginDetailsJSON)
         .then(response => response.json())
 		.then(data => console.log(data));
 	}
-					
+				
+
+	componentDidMount()
+	{
+		if(Cookies.get("userId"))
+		{
+			this.setState({loginStatus: "true"});
+		}
+	}
+				
 	render()
 	{
 		return(

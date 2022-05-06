@@ -13,15 +13,18 @@ const Schema = mongoose.Schema;
 
 app.use(express.static("public"));
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors(corsOptions = {
+   optionsSuccessStatus: 200,
+   credentials: true,
+ }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
-//app.use(express.static(path.join(__dirname, "..", "public")));
-//app.use(express.static("public"));
+app.use(cookieParser("NewWord"));
+app.use(express.static(path.join(__dirname, "..", "build")));
+app.use(express.static("public"));
 
 app.use(sessions({
-    secret: "thisismysecrctekeyfhrgfgrfrty84fwir767",
+    secret: "NewWord",
     saveUninitialized:true,
     resave: false
 }));
@@ -58,35 +61,55 @@ const BlogPostDetails = mongoose.model('BlogPostDetails', BlogPostSchema);
 
 
 
-//Start server on LocalHost 3001
+//Start server on LocalHost 3000
 
-var server = app.listen(3001, onServerStart);
+var server = app.listen(3000, onServerStart);
 
 function onServerStart()
 {
-    console.log("Server Started at LocalHost 3001");
+    console.log("Server Started at LocalHost 3000");
 }
+
+app.get("/", (req, res) => 
+{
+    res.sendFile(path.join(__dirname, "..", "build", "index.html"));	
+});
 
 //Make Login Details
 app.post("/CreateLoginDetails", CreateLoginDetails);
 
 function CreateLoginDetails(req, res)
 {
-	LoginDetails.find({Username: req.body.username}, function (err, result)
+	if (req.session.userId)
 	{
-		if (!result.length)
+		console.log("user already exists");
+		res.send({Status: "Success"});
+	}
+	else
+	{
+		if (req.session.userId)
 		{
-			console.log("Username does not exist. Creating account.");
-			LoginDetails.create({Username: req.body.username, Password: req.body.password});
+			console.log("id exists");
 		}
 		else
 		{
-			//Use if Username did exist
-			console.log("Username does exist. Cannot create account");
+			LoginDetails.find({Username: req.body.username}, function (err, result)
+			{
+				if (!result.length)
+				{
+					console.log("Username does not exist. Creating account.");
+					LoginDetails.create({Username: req.body.username, Password: req.body.password});
+				}
+				else
+				{
+					//Use if Username did exist
+					console.log("Username does exist. Cannot create account");
+				}
+			})
+			res.sendStatus(200);
 		}
-	})
-	
-	res.sendStatus(200);
+	}
+
 }
 
 
@@ -97,30 +120,41 @@ async function CheckLoginDetails(req, res)
 {
 	console.log(req.session.userId);
 	
-	let result = await LoginDetails.findOne({Username: req.body.username});
-	if (result)
+	if (req.session.userId)
 	{
-		console.log("Username was found.");
-		bcrypt.compare(req.body.password, result.Password, (error, same) =>
-		{
-			if (same)
-			{
-				console.log('correct password');
-				req.session.userId = result._id;
-				res.send({Status: "Success"});
-			}
-			else
-			{
-				console.log('incorrect password');
-				res.send({Status: "Not Success"});
-			}
-		})
+		console.log("user already exists");
+		res.send({Status: "Success"});
 	}
 	else
 	{
-		//Use if Username did exist
-		console.log("Username does not exist.");
-		res.send({Status: "Not Success"});
+		let result = await LoginDetails.findOne({Username: req.body.username});
+		if (result)
+		{
+			console.log("Username was found.");
+			bcrypt.compare(req.body.password, result.Password, (error, same) =>
+			{
+				if (same)
+				{
+					console.log(result._id);
+					console.log('correct password');
+					//req.session.userId = result._id;
+					res.cookie('userId', result._id, { signed: true, httpOnly: false });
+					res.send({Status: "Success"});
+					console.log(req.signedCookies.userId);
+				}
+				else
+				{
+					console.log('incorrect password');
+					res.send({Status: "Not Success"});
+				}
+			})
+		}
+		else
+		{
+			//Use if Username did exist
+			console.log("Username does not exist.");
+			res.send({Status: "Not Success"});
+		}
 	}
 };
 

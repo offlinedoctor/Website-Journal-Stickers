@@ -4,6 +4,20 @@ import Button from '@mui/material/Button';
 import ForwardIcon from '@mui/icons-material/Forward';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
+import Cookies from 'js-cookie';
+import { Navigate } from "react-router-dom";
+
+function ConditionalRender(props)
+{
+	if (props.loginSuccess == "true")
+	{
+		return <></>
+	}
+	else if (props.loginSuccess == "false")
+	{
+		return <Navigate replace to="/LoginScreen" />;
+	}
+}
 
 class Dashboard extends React.Component
 {	
@@ -15,6 +29,7 @@ class Dashboard extends React.Component
 		this.state =
 		{
 			BlogPostList: [],
+			loginStatus: "",
 		}
 		
 		this.SubmitBlogPost = this.SubmitBlogPost.bind(this);
@@ -31,23 +46,32 @@ class Dashboard extends React.Component
 			
 			console.log(BlogPostDetailsJSON);
 			
-			fetch('http://localhost:3001/SubmitBlogPost', BlogPostDetailsJSON)
+			fetch('/SubmitBlogPost', BlogPostDetailsJSON)
 			.then(response => response.json())
 			.then(data => this.setState({BlogPostList: data}));
+			
+			console.log(Cookies.get("userId"));
+			
 	}
 
 	componentDidMount() 
 	{
-		this.SubmitBlogPost();
+		if(Cookies.get("userId"))
+		{
+			this.setState({loginStatus: "true"});
+			this.SubmitBlogPost();
+		}
+		else
+		{
+			this.setState({loginStatus: "false"});
+		}
 	}
 	
 	render()
 	{	
-	
-
 		return(
 			<div style={{display: "flex", flexDirection: "column", alignItems: "center" }}>
-				<Grid container spacing={2} style={{height: "500px", overflowY: "auto", width: "500px", overflowX: "auto"}}>
+				<Grid container spacing={2} style={{height: "500px", overflowY: "auto", width: "500px", overflowX: "hidden"}}>
 				{
 					this.state.BlogPostList.map(eachIteration => 
 						<Grid item>
@@ -62,6 +86,7 @@ class Dashboard extends React.Component
 					<TextField id="BlogPost" label="Blog Idea" variant="outlined" inputProps={{ maxLength: 12 }}/>
 					<Button variant="contained" onClick={this.SubmitBlogPost} endIcon={<ForwardIcon />}> Submit </Button>
 				</div>
+				<ConditionalRender loginSuccess={this.state.loginStatus} />
 			</div>
 		);	  
 	}
